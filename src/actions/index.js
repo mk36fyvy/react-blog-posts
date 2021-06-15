@@ -1,10 +1,20 @@
 import jsonPlaceholder from '../apis/jsonPlaceholder';
-// import _ from 'lodash';
+import _ from 'lodash';
 
 export const fetchPostsAndUsers = () => async (dispatch, getState) => {
     await dispatch(fetchPosts());
 
-    getState().props
+    // const userIds = _.uniq(_.map(getState().posts, 'userId'));
+    // userIds.forEach((id) => dispatch(fetchUser(id)));
+
+    _.chain(getState().posts)
+        .map('userId')
+        .uniq()
+        .forEach((id) => dispatch(fetchUser(id)))
+        .value();
+    // no await keyword because we don't care when exactly it came
+    // However, forEach does not work with async/await, one would need to do
+    // Promise.all(userIds.map(id => dispatch(fetchUser(id))))
 };
 
 export const fetchPosts = () => async (dispatch) => {
